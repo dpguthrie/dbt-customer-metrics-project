@@ -1,2 +1,9 @@
-select * from {{ ref('tpch', 'dim_customers') }}
-where customer_key = split(current_user, '_')[1]::int
+with source as (
+    select * from {{ ref('tpch', 'dim_customers') }}
+)
+    
+select a.*
+from source a
+join {{ ref('customer_mapping') }} b on
+    a.customer_key = b.customer_key
+    and b.snowflake_user = current_user
